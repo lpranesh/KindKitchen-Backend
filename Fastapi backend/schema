@@ -1,0 +1,113 @@
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    PhoneNumber VARCHAR(15) UNIQUE ,
+    Role ENUM('Donor', 'Restaurant', 'NGO', 'Delivery_Agent') NOT NULL,
+    ProfilePicture VARCHAR(255),
+    DateOfRegistration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Password VARCHAR(255) NOT NULL,
+    Street VARCHAR(255) ,
+    City VARCHAR(100) ,
+    State VARCHAR(100),
+    PostalCode VARCHAR(20) ,)
+
+CREATE TABLE Delivery_Agents (
+    UserID INT UNIQUE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    DeliveryAgentID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(15) UNIQUE NOT NULL,
+);
+
+CREATE TABLE Restaurants (
+    UserID INT UNIQUE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    RestaurantID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(15) UNIQUE NOT NULL,
+    Street VARCHAR(255) NOT NULL,
+    City VARCHAR(100) NOT NULL,
+    State VARCHAR(100) NOT NULL,
+    PostalCode VARCHAR(20) NOT NULL,
+    Rating INT,
+);
+
+CREATE TABLE Food_Items (
+    FoodItemID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Available_Quantity INT NOT NULL,
+    Priceforsingleitem DECIMAL(10,2) NOT NULL,
+    Photo VARCHAR(255),
+    FoodType ENUM('Veg', 'Non-Veg') NOT NULL,
+    expires DATE NOT NULL,
+    IsAvailable BOOLEAN DEFAULT TRUE,
+    RestaurantID INT,
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID)
+);
+
+
+CREATE TABLE NGOs (
+    NGOID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT UNIQUE,
+    Name VARCHAR(255) NOT NULL,
+    Street VARCHAR(255) NOT NULL,
+    City VARCHAR(100) NOT NULL,
+    State VARCHAR(100) NOT NULL,
+    PostalCode VARCHAR(20) NOT NULL,
+    PhoneNumber VARCHAR(15) UNIQUE NOT NULL,
+    WalletBalance DECIMAL(10,2) DEFAULT 0.0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Wallets (
+    WalletID INT PRIMARY KEY AUTO_INCREMENT,
+    NGOID INT NOT NULL,
+    WalletBalance DECIMAL(10,2) DEFAULT 0.0,
+    FOREIGN KEY (NGOID) REFERENCES NGOs(NGOID)
+);
+
+CREATE TABLE donors(
+    UserID INT UNIQUE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    DonorID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(15) UNIQUE NOT NULL,
+    Street VARCHAR(255) NOT NULL,
+    City VARCHAR(100) NOT NULL,
+    State VARCHAR(100) NOT NULL,
+    PostalCode VARCHAR(20) NOT NULL,
+)
+
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
+    Amount DECIMAL(10,2) NOT NULL,
+    PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PaymentMethod ENUM('Credit Card', 'Debit Card', 'UPI', 'Cash', 'Bank Transfer','Wallet') NOT NULL,
+    TransactionStatus ENUM('Success', 'Failed', 'Pending') NOT NULL,
+    fromUserID INT NOT NULL,
+    toUserID INT NOT NULL,
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
+    NGOID INT NOT NULL,
+    DeliveryAgentID INT,
+    RestaurantID INT NOT NULL,
+    PaymentID INT,
+    Quantity INT NOT NULL,
+    TotalPrice DECIMAL(10,2),
+    OrderStatus ENUM('Pending', 'In Progress', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    FoodItemID INT NOT NULL,
+    FOREIGN KEY (FoodItemID) REFERENCES Food_Items(FoodItemID),
+    FOREIGN KEY (NGOID) REFERENCES NGOs(NGOID)
+    FOREIGN KEY (PaymentID) REFERENCES Payments(PaymentID),
+    FOREIGN KEY (DeliveryAgentID) REFERENCES Delivery_Agents(DeliveryAgentID)
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID),
+    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    DeliveryDate TIMESTAMP,
+);
+
+
+
