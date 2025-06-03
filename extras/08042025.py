@@ -115,8 +115,8 @@ class Wallet(BaseModel):
 def first():
     return {"Heyy!": "This is the code for ngo,payments and wallets"}
 
-@app.get("/testdb")
-def testdb():
+@app.get("/getdb")
+def getdb():
     cursor = conn.cursor()
     cursor.execute("SELECT current_database();")
     db_name = cursor.fetchone()["current_database"]

@@ -17,7 +17,7 @@ class NGO(BaseModel):
 
 @router.post("/add-ngo")
 def add_ngo(ngo: NGO):
-    conn = get_db_connection()  # Reuse the connection function here
+    conn = database()  # Reuse the connection function here
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -31,4 +31,4 @@ def add_ngo(ngo: NGO):
         return {"error": str(e)}
     finally:
         cursor.close()
-        conn.close()
+        conn.close()    
